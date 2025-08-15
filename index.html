@@ -411,6 +411,41 @@ async function loadYahoo(workerBase, syms=['SMH','XLK','SMHX']){
 // Load data on page load
 loadYahoo(workerBase, ['SMH','XLK','SMHX']);
 </script>
+<script>
+// ---- Yahoo via Cloudflare Worker ----
+const workerBase = "https://yahoo-proxy.royrosa83.workers.dev";  // your worker
+
+async function loadYahoo(base, syms=['SMH','XLK','SMHX']){
+  try {
+    const url = `${base}/quote?symbols=${syms.join(',')}`;
+    const data = await fetch(url, { cache: "no-store" }).then(r=>r.json());
+    const map = Object.fromEntries((data||[]).map(d => [d.symbol, d]));
+    // rows is the array the dashboard already uses
+    rows = rows.map(r=>{
+      const d = map[r.ticker];
+      if(!d || d.error) return r;
+      const f = (x,n=2)=> x==null ? '' : Number(x).toFixed(n);
+      return {
+        ...r,
+        last:   d.last ?? r.last,
+        open:   d.open ?? r.open,
+        prev:   d.prev ?? r.prev,
+        ma20:   d.ma20  != null ? f(d.ma20)  : r.ma20,
+        ma50:   d.ma50  != null ? f(d.ma50)  : r.ma50,
+        ma200:  d.ma200 != null ? f(d.ma200) : r.ma200,
+        vol:    d.vol ?? r.vol,
+        volavg: d.volAvg63 != null ? Math.round(d.volAvg63) : r.volavg
+      };
+    });
+    render();
+  } catch (e) {
+    console.warn("Yahoo load failed:", e);
+  }
+}
+
+// Fetch once on page load:
+loadYahoo(workerBase, ['SMH','XLK','SMHX']);
+</script>
 
 </body>
 </html>
