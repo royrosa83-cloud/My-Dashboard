@@ -378,5 +378,39 @@
 
     render();
   </script>
+  <script>
+// Replace with your actual Worker URL (without `/quote`)
+const workerBase = "https://yahoo-proxy.royrosa83.workers.dev";
+
+async function loadYahoo(workerBase, syms=['SMH','XLK','SMHX']){
+  const url = `${workerBase}/quote?symbols=${syms.join(',')}`;
+  const data = await fetch(url).then(r=>r.json());
+  const map = Object.fromEntries(data.map(d => [d.symbol, d]));
+
+  // Assuming you have a `rows` array the dashboard uses
+  rows = rows.map(r=>{
+    const d = map[r.ticker];
+    if(!d) return r;
+    return {
+      ...r,
+      last: d.last ?? r.last,
+      open: d.open ?? r.open,
+      prev: d.prev ?? r.prev,
+      ma20: d.ma20 ? d.ma20.toFixed(2) : r.ma20,
+      ma50: d.ma50 ? d.ma50.toFixed(2) : r.ma50,
+      ma200: d.ma200 ? d.ma200.toFixed(2) : r.ma200,
+      vol: d.vol ?? r.vol,
+      volavg: d.volAvg63 ? Math.round(d.volAvg63) : r.volavg
+    };
+  });
+
+  // Now redraw the dashboard
+  render();
+}
+
+// Load data on page load
+loadYahoo(workerBase, ['SMH','XLK','SMHX']);
+</script>
+
 </body>
 </html>
