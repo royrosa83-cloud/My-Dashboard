@@ -45,16 +45,28 @@ table{
   border-spacing: 0;
   table-layout: auto;               /* let wide columns expand */
   min-width: 0;
-  font-size: calc(var(--base-font) * .92);
-}
+  font-size: calc(var(--base-font) * .92);}
 /* Let text-heavy columns wrap & be a bit wider */
 .table-wrapper th:nth-child(21),
 .table-wrapper td:nth-child(21),   /* Trend Status */
 .table-wrapper th:nth-child(22),
 .table-wrapper td:nth-child(22) {  /* Trend Signal */
-  white-space: normal;             /* allow wrapping */
+  white-space: normal;
   text-align: left;
   min-width: 150px;
+}
+
+.table-wrapper th:nth-child(23),
+.table-wrapper td:nth-child(23) {  /* Sparkline Prices */
+  min-width: 120px;
+  max-width: 160px;
+}
+
+.table-wrapper th:last-child,
+.table-wrapper td:last-child {     /* Delete button */
+  width: 84px;
+  text-align: center;
+}
 }
 
 /* Keep the small input column (Sparkline Prices) from growing too wide */
