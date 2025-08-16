@@ -47,6 +47,29 @@ table{
   min-width: 0;
   font-size: calc(var(--base-font) * .92);
 }
+/* Let text-heavy columns wrap & be a bit wider */
+.table-wrapper th:nth-child(21),
+.table-wrapper td:nth-child(21),   /* Trend Status */
+.table-wrapper th:nth-child(22),
+.table-wrapper td:nth-child(22) {  /* Trend Signal */
+  white-space: normal;             /* allow wrapping */
+  text-align: left;
+  min-width: 150px;
+}
+
+/* Keep the small input column (Sparkline Prices) from growing too wide */
+.table-wrapper th:nth-child(23),
+.table-wrapper td:nth-child(23) {
+  min-width: 120px;
+  max-width: 160px;
+}
+
+/* Keep the far-right 'Delete' action narrow */
+.table-wrapper th:last-child,
+.table-wrapper td:last-child {
+  width: 84px;
+  text-align: center;
+}
 
 }
 
