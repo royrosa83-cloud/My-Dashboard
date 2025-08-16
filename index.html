@@ -14,8 +14,11 @@
     .wrap{max-width:1200px;margin:0 auto;padding:14px 18px;display:flex;align-items:center;gap:14px;justify-content:space-between}
     h1{font-size:18px;margin:0}
     .sub{color:var(--muted);font-size:12px}
-    .grid{display:grid;grid-template-columns:280px 1fr;gap:16px;margin:16px auto;max-width:1200px;padding:0 18px}
-    @media (max-width:980px){.grid{grid-template-columns:1fr}}
+    .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+}    @media (max-width:980px){.grid{grid-template-columns:1fr}}
     .panel{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:14px;box-shadow:var(--shadow)}
     .btn{background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:10px;cursor:pointer}
     .btn:hover{border-color:color-mix(in oklab, var(--border), var(--blue) 30%)}
