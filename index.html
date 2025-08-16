@@ -313,7 +313,7 @@
   try{
     // IMPORTANT: don't encode commas
     const url = `${base.replace(/\/$/,'')}/quote?symbols=${symbols.join(',')}&_=${Date.now()}`;
-    const res = await fetch(url, { headers: { 'cache-control': 'no-cache' }});
+    const res = await fetch(url);});
 
     if (!res.ok) {
       console.error('Worker HTTP error', res.status, await res.text());
