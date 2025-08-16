@@ -43,9 +43,11 @@ table{
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  table-layout: fixed;               /* equal column widths */
-  min-width: 0;                      /* allow shrinking */
+  table-layout: auto;               /* let wide columns expand */
+  min-width: 0;
   font-size: calc(var(--base-font) * .92);
+}
+
 }
 
 /* Sticky header */
