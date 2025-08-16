@@ -4,20 +4,12 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Roy – Portfolio Signals & Intraday Dashboard</title>
-  <!-- Favicon: inline SVG -->
   <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="%230b1120"/><path d="M10 40 L24 28 L34 36 L54 18" stroke="%2360a5fa" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>' />
   <style>
-    :root{
-      --bg:#0b0f17; --panel:#121826; --muted:#8b9bb5; --text:#e6edf7; --green:#22c55e; --red:#ef4444; --yellow:#f59e0b; --blue:#60a5fa; --card:#0f1522; --border:#1f2937;
-      --shadow: 0 6px 16px rgba(0,0,0,.25);
-    }
-    /* Light theme variables */
-    :root.light {
-      --bg:#f8fafc; --panel:#ffffff; --muted:#5b6b85; --text:#0f172a; --green:#16a34a; --red:#dc2626; --yellow:#d97706; --blue:#2563eb; --card:#f1f5f9; --border:#e2e8f0;
-      --shadow: 0 6px 16px rgba(2,6,23,.08);
-    }
+    :root{ --bg:#0b0f17; --panel:#121826; --muted:#8b9bb5; --text:#e6edf7; --green:#22c55e; --red:#ef4444; --yellow:#f59e0b; --blue:#60a5fa; --card:#0f1522; --border:#1f2937; --shadow:0 6px 16px rgba(0,0,0,.25); --col-scale:1.15; --base-font:15px; --cell-pad:10px; }
+    :root.light { --bg:#f8fafc; --panel:#ffffff; --muted:#5b6b85; --text:#0f172a; --green:#16a34a; --red:#dc2626; --yellow:#d97706; --blue:#2563eb; --card:#f1f5f9; --border:#e2e8f0; --shadow:0 6px 16px rgba(2,6,23,.08); }
     *{box-sizing:border-box}
-    body{margin:0;background:linear-gradient(180deg,var(--bg),var(--panel));color:var(--text);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),var(--panel));color:var(--text);font:var(--base-font)/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
     header{position:sticky;top:0;z-index:5;background:color-mix(in oklab, var(--bg), transparent 20%);backdrop-filter:saturate(140%) blur(6px);border-bottom:1px solid var(--border)}
     .wrap{max-width:1200px;margin:0 auto;padding:14px 18px;display:flex;align-items:center;gap:14px;justify-content:space-between}
     h1{font-size:18px;margin:0}
@@ -27,25 +19,38 @@
     .panel{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:14px;box-shadow:var(--shadow)}
     .btn{background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:10px;cursor:pointer}
     .btn:hover{border-color:color-mix(in oklab, var(--border), var(--blue) 30%)}
-    .btn.primary{background:color-mix(in oklab, var(--card), var(--blue) 10%)}
     .btn.danger{background:color-mix(in oklab, var(--card), var(--red) 10%);border-color:color-mix(in oklab, var(--border), var(--red) 25%)}
     .row{display:flex;gap:8px;flex-wrap:wrap}
     .note{color:var(--muted);font-size:12px}
-    table{width:100%;border-collapse:separate;border-spacing:0}
-    thead th{position:sticky;top:0;background:var(--panel);border-bottom:1px solid var(--border);font-weight:600;padding:8px 6px;text-align:left;font-size:12px;color:color-mix(in oklab, var(--muted), var(--text) 25%)}
-    tbody td{padding:8px 6px;border-bottom:1px dashed color-mix(in oklab, var(--border), transparent 40%);vertical-align:middle}
-    tbody tr{transition:background .15s ease}
-    tbody tr:hover{background:color-mix(in oklab, var(--panel), var(--card) 26%)}
-    td input{width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);padding:6px 8px;border-radius:8px}
-    td[data-out] {font-variant-numeric:tabular-nums}
-    .pill{display:inline-block;padding:4px 8px;border-radius:999px;font-size:12px;border:1px solid var(--border)}
-    .pill.green{background:color-mix(in oklab, var(--green), transparent 88%);color:color-mix(in oklab, var(--green), white 20%);border-color:color-mix(in oklab, var(--green), transparent 65%)}
-    .pill.red{background:color-mix(in oklab, var(--red), transparent 88%);color:color-mix(in oklab, var(--red), white 20%);border-color:color-mix(in oklab, var(--red), transparent 65%)}
-    .pill.yellow{background:color-mix(in oklab, var(--yellow), transparent 88%);color:color-mix(in oklab, var(--yellow), white 20%);border-color:color-mix(in oklab, var(--yellow), transparent 65%)}
-    .pill.blue{background:color-mix(in oklab, var(--blue), transparent 88%);color:color-mix(in oklab, var(--blue), white 20%);border-color:color-mix(in oklab, var(--blue), transparent 65%)}
-    .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;background:var(--card);border:1px solid var(--border);padding:2px 6px;border-radius:6px;color:color-mix(in oklab, var(--text), var(--muted) 25%)}
-    .footer{color:var(--muted);font-size:12px;margin-top:6px}
-    .theme {display:flex;align-items:center;gap:8px}
+    table{width:100%;border-collapse:separate;border-spacing:0;font-size:calc(var(--base-font) * 0.95)}
+    thead th{position:sticky;top:0;background:var(--panel);border-bottom:1px solid var(--border);font-weight:700;padding:calc(var(--cell-pad) * 0.8) var(--cell-pad);text-align:left;font-size:calc(var(--base-font) * 0.9);color:color-mix(in oklab, var(--muted), var(--text) 25%)}
+    tbody td{padding:var(--cell-pad);border-bottom:1px dashed color-mix(in oklab, var(--border), transparent 40%);vertical-align:middle}
+    tbody tr{transition:background .15s ease, box-shadow .15s ease}
+    tbody tr:hover{background:color-mix(in oklab, var(--panel), var(--card) 22%); box-shadow:0 1px 0 rgba(255,255,255,.04) inset}
+    td input{width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:calc(var(--base-font) * 0.95)}
+    td[data-out]{font-variant-numeric:tabular-nums}
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;font-size:12px;border:1px solid var(--border)}
+    .pill.green{background:rgba(34,197,94,.12);color:#86efac;border-color:rgba(34,197,94,.35)}
+    .pill.red{background:rgba(239,68,68,.12);color:#fecaca;border-color:rgba(239,68,68,.35)}
+    .pill.yellow{background:rgba(245,158,11,.12);color:#fde68a;border-color:rgba(245,158,11,.35)}
+    .pill.blue{background:rgba(96,165,250,.12);color:#bfdbfe;border-color:rgba(96,165,250,.35)}
+    /* Column sizing */
+    th, td { min-width: calc(80px * var(--col-scale)); }
+    td:nth-child(1), th:nth-child(1) { min-width: calc(64px * var(--col-scale)); }
+    td:nth-child(2),th:nth-child(2), td:nth-child(3),th:nth-child(3), td:nth-child(4),th:nth-child(4){ min-width: calc(100px * var(--col-scale)); }
+    td:nth-child(5),th:nth-child(5), td:nth-child(7),th:nth-child(7), td:nth-child(18),th:nth-child(18), td:nth-child(19),th:nth-child(19), td:nth-child(20),th:nth-child(20){ min-width: calc(120px * var(--col-scale)); }
+    td:nth-child(9),th:nth-child(9), td:nth-child(10),th:nth-child(10), td:nth-child(11),th:nth-child(11){ min-width: calc(90px * var(--col-scale)); }
+    td:nth-child(12),th:nth-child(12){ min-width: calc(120px * var(--col-scale)); }
+    td:nth-child(13),th:nth-child(13){ min-width: calc(130px * var(--col-scale)); }
+    td:nth-child(14),th:nth-child(14){ min-width: calc(105px * var(--col-scale)); }
+    td:nth-child(21),th:nth-child(21){ min-width: calc(160px * var(--col-scale)); }
+    td:nth-child(22),th:nth-child(22){ min-width: calc(180px * var(--col-scale)); }
+    td:nth-child(23),th:nth-child(23){ min-width: calc(240px * var(--col-scale)); }
+    td:nth-child(24),th:nth-child(24){ min-width: calc(150px * var(--col-scale)); }
+    /* Density modes */
+    .density-compact { --cell-pad: 6px; --base-font: 14px; }
+    .density-cozy    { --cell-pad: 10px; --base-font: 15px; }
+    .density-comfy   { --cell-pad: 14px; --base-font: 16px; }
     .spark{width:120px;height:32px;display:block}
   </style>
 </head>
@@ -56,7 +61,7 @@
         <h1>Portfolio Signals & Intraday Dashboard</h1>
         <div class="sub">Type or import your latest prices; the dashboard computes intraday, trend, and discipline metrics automatically. Data saves to your browser.</div>
       </div>
-      <div class="theme">
+      <div class="row">
         <button class="btn" id="themeToggle" title="Toggle theme">🌓 Theme</button>
       </div>
     </div>
@@ -81,23 +86,32 @@
         <ul class="note" style="margin:6px 0 0 16px;line-height:1.35">
           <li><b>Ticker</b> (e.g., SMH)</li>
           <li><b>Last</b>, <b>Open</b>, <b>Prev Close</b></li>
-          <li><b>MA20</b>, <b>MA50</b>, <b>MA200</b> (paste from your Signals/Data tabs)</li>
+          <li><b>MA20</b>, <b>MA50</b>, <b>MA200</b> (from your Signals/Data tabs or auto)</li>
           <li><b>Volume</b>, <b>Avg Vol (3m)</b> → dashboard computes <b>Vol Ratio</b></li>
           <li><b>Entry</b>, <b>Target</b>, <b>Stop</b> → dashboard computes RR & distances</li>
-          <li><b>Sparkline Prices</b> — optional comma-separated closes for the mini chart (e.g., <span class="kbd">300,304,302,307,310</span>).</li>
+          <li><b>Sparkline Prices</b> — optional comma-separated closes (e.g., 300,304,302,307,310)</li>
         </ul>
       </details>
-      <div class="footer">Tip: keep your Google Sheet or brokerage page open to copy numbers. Use <span class="kbd">Save</span> to persist locally.</div>
     </aside>
 
     <main class="panel">
       <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:8px">
         <div class="note">Edit any input; outputs update instantly. Use the sparkline to visualize recent drift.</div>
         <div class="row">
+          <label class="btn" title="Column width">Cols ×
+            <input id="colScale" type="range" min="1" max="1.6" step="0.05" style="vertical-align:middle;width:140px;margin-left:6px">
+          </label>
+          <select id="density" class="btn" title="Row density">
+            <option value="density-compact">Compact</option>
+            <option value="density-cozy" selected>Cozy</option>
+            <option value="density-comfy">Comfy</option>
+          </select>
           <button class="btn" id="sortSignal">Sort by Trend Signal</button>
           <button class="btn" id="sortTicker">Sort by Ticker</button>
+          <button class="btn" id="refreshData" title="Fetch from Worker">Refresh Data</button>
         </div>
       </div>
+
       <div style="overflow:auto;border-radius:12px;border:1px solid var(--border)">
         <table id="tbl">
           <thead>
@@ -106,28 +120,22 @@
               <th title="Last Price">Last</th>
               <th>Open</th>
               <th>Prev Close</th>
-
               <th>% vs Open</th>
               <th>Intraday Dir (Open)</th>
               <th>% vs Prev</th>
               <th>Dir (Prev Close)</th>
-
               <th>MA20</th>
               <th>MA50</th>
               <th>MA200</th>
-
               <th>Volume</th>
               <th>Avg Vol (3m)</th>
               <th>Vol Ratio</th>
-
               <th>Entry</th>
               <th>Target</th>
               <th>Stop</th>
-
               <th>% From Entry</th>
               <th>% To Target</th>
               <th>% To Stop</th>
-
               <th>Trend Status</th>
               <th>Trend Signal</th>
               <th>Sparkline Prices</th>
@@ -142,69 +150,37 @@
   </div>
 
   <script>
-    /* ===== Theme ===== */
+    // Theme toggle
     const root = document.documentElement;
     const savedTheme = localStorage.getItem('roy-theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    function applyTheme(mode){
-      // mode: 'light' | 'dark' | 'auto'
-      root.classList.remove('light');
-      if(mode==='light'){ root.classList.add('light'); }
-      localStorage.setItem('roy-theme', mode);
-    }
+    function applyTheme(mode){ root.classList.toggle('light', mode==='light'); localStorage.setItem('roy-theme', mode); }
     applyTheme(savedTheme || (prefersDark? 'dark':'light'));
-    document.getElementById('themeToggle').onclick=()=>{
-      const cur = localStorage.getItem('roy-theme') || (prefersDark? 'dark':'light');
-      applyTheme(cur==='light' ? 'dark' : 'light');
-    };
+    document.getElementById('themeToggle').onclick=()=>{ const cur = localStorage.getItem('roy-theme') || (prefersDark? 'dark':'light'); applyTheme(cur==='light'?'dark':'light'); };
 
-    /* ===== Utility ===== */
+    // Utils
     const sel = (q,ctx=document)=>ctx.querySelector(q);
     const el = (t,props={})=>Object.assign(document.createElement(t),props);
     const num = (v)=>{
       if(v===undefined||v===null) return NaN;
       if(typeof v==='number') return v;
-      const s = (''+v).replace(/[,\s%]/g,'');
+      const s = (''+v).replace(/[,\u00A0\s%$]/g,''); // strip commas, spaces, %, $
       const n = parseFloat(s);
       return isNaN(n)?NaN:n;
     };
     const pct = (v)=> isFinite(v)? (v*100).toFixed(2)+'%':'';
-    const fmt = (v)=> isFinite(v)? Number(v).toFixed(2):'';
 
     const FLAT_BAND = 0.001; // ±0.10%
     const VOL_PLUS = 1.10;   // ≥ 1.10x avg volume
 
+    // Starter rows
     const DEFAULT_ROWS = [
-    const DEFAULT_ROWS = [
-  {
-    ticker:'SMH',
-    last:'295.65', open:'', prev:'',
-    ma20:'291.60', ma50:'280.80', ma200:'',
-    vol:'', volavg:'',
-    entry:'287.26', target:'350.00', stop:'286.22',
-    spark:''
-  },
-  {
-    ticker:'XLK',
-    last:'265.70', open:'', prev:'',
-    ma20:'263.26', ma50:'254.82', ma200:'',
-    vol:'', volavg:'',
-    entry:'231.87', target:'320.00', stop:'255.89',
-    spark:''
-  },
-  {
-    ticker:'SMHX',
-    last:'35.50', open:'', prev:'',
-    ma20:'34.36', ma50:'32.09', ma200:'',
-    vol:'', volavg:'',
-    entry:'36.00', target:'45.00', stop:'34.42',
-    spark:''
-  }
-];
-
+      {ticker:'SMH', last:'295.65', open:'', prev:'', ma20:'291.60', ma50:'280.80', ma200:'', vol:'', volavg:'', entry:'287.26', target:'350.00', stop:'286.22', spark:''},
+      {ticker:'XLK', last:'265.70', open:'', prev:'', ma20:'263.26', ma50:'254.82', ma200:'', vol:'', volavg:'', entry:'231.87', target:'320.00', stop:'255.89', spark:''},
+      {ticker:'SMHX', last:'35.50',  open:'', prev:'', ma20:'34.36',  ma50:'32.09',  ma200:'', vol:'', volavg:'', entry:'36.00',  target:'45.00',  stop:'34.42',  spark:''}
     ];
 
-    let rows = JSON.parse(localStorage.getItem('roy-dashboard-v2')||'null') || DEFAULT_ROWS;
+    let rows = JSON.parse(localStorage.getItem('roy-dashboard-v3')||'null') || DEFAULT_ROWS;
 
     function compute(r){
       const last=num(r.last), open=num(r.open), prev=num(r.prev);
@@ -220,7 +196,6 @@
 
       const vRatio = (isFinite(vol)&&isFinite(volavg)&&volavg!==0)? vol/volavg : NaN;
 
-      // MA alignment
       let status = '';
       if (isFinite(ma20)&&isFinite(ma50)&&isFinite(ma200)){
         if (ma20>ma50 && ma50>ma200) status='Bullish (20>50>200)';
@@ -228,7 +203,6 @@
         else status='Caution (mixed)';
       }
 
-      // Trend signal (with graceful fallbacks)
       let tSignal = '';
       const volStrong = isFinite(vRatio) && vRatio>=VOL_PLUS;
       if (status){
@@ -236,7 +210,6 @@
         else if (status.startsWith('Bearish')) tSignal = volStrong? 'Sell (downtrend + vol)':'Sell (downtrend)';
         else tSignal = 'Watch (mixed)';
       } else if (isFinite(last) && isFinite(ma200)) {
-        // Fallback: price vs 200
         if (last>ma200) tSignal = volStrong? 'Bullish (above 200 + vol)':'Bullish (above 200)';
         else tSignal = volStrong? 'Bearish (below 200 + vol)':'Bearish/Neutral (below 200)';
       }
@@ -258,21 +231,17 @@
       return span.outerHTML;
     }
 
-    // Draw sparkline from comma-separated prices
     function sparkSVG(series){
-      if(!series || series.length<2) return '';
+      if(!series||series.length<2) return '';
       const w=120,h=32,pad=2;
       const min=Math.min(...series), max=Math.max(...series);
-      const span=max-min || 1;
+      const span=max-min||1;
       const step=(w-2*pad)/(series.length-1);
-      const y=(v)=> h-pad - ((v-min)/span)*(h-2*pad);
-      const x=(i)=> pad + i*step;
-      let d='M '+x(0).toFixed(1)+' '+y(series[0]).toFixed(1);
-      for(let i=1;i<series.length;i++){ d+=' L '+x(i).toFixed(1)+' '+y(series[i]).toFixed(1); }
-      return `<svg class="spark" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
-        <polyline fill="none" stroke="currentColor" stroke-width="2" points="${series.map((v,i)=>`${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ')}" />
-      </svg>`;
+      const y=v=> h-pad - ((v-min)/span)*(h-2*pad);
+      const x=i=> pad + i*step;
+      return `<svg class="spark" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg"><polyline fill="none" stroke="currentColor" stroke-width="2" points="${series.map((v,i)=>`${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ')}" /></svg>`;
     }
+    const parseSpark = s => (s||'').split(/[\s,]+/).map(Number).filter(n=>isFinite(n));
 
     const COLS = [
       {key:'ticker', label:'Ticker', in:true},
@@ -302,19 +271,11 @@
       {key:'del', label:'', out:true}
     ];
 
-    function parseSpark(s){ try{ return (s||'').split(/[\\s,]+/).map(Number).filter(n=>isFinite(n)); }catch{ return []; } }
-
-    function computeRow(r){
-      const c = compute(r);
-      const series = parseSpark(r.spark);
-      return {...c, series};
-    }
-
     function render(){
       const tbody = sel('#body');
       tbody.innerHTML='';
       rows.forEach((r,idx)=>{
-        const c = computeRow(r);
+        const c = {...compute(r), series: parseSpark(r.spark)};
         const tr = el('tr');
         COLS.forEach(col=>{
           const td = el('td');
@@ -324,7 +285,7 @@
             if(col.key==='ticker') inp.placeholder='e.g., SMH';
             if(col.key==='spark') inp.placeholder='e.g., 300,304,302,307,310';
             td.appendChild(inp);
-          }else if(col.out){
+          } else if(col.out){
             td.setAttribute('data-out','');
             let val='';
             switch(col.key){
@@ -338,138 +299,104 @@
               case 'pToStop': val=pct(c.pToStop); break;
               case 'status': val=c.status; break;
               case 'tSignal': val=badge(c.tSignal); break;
-              case 'sparkOut': val = c.series.length? sparkSVG(c.series): ''; break;
-              case 'del': {
-                const b = el('button',{className:'btn danger',textContent:'Delete'});
-                b.addEventListener('click',()=>{ rows.splice(idx,1); render(); });
-                td.appendChild(b); return;
-              }
-              default: val='';
+              case 'sparkOut': val=c.series.length? sparkSVG(c.series):''; break;
+              case 'del': const b=el('button',{className:'btn danger',textContent:'Delete'}); b.onclick=()=>{ rows.splice(idx,1); render(); }; td.appendChild(b); break;
             }
-            td.innerHTML = val;
+            if(col.key!=='del') td.innerHTML = val;
           }
           tr.appendChild(td);
         });
         tbody.appendChild(tr);
       });
-      // Save light auto
-      localStorage.setItem('roy-dashboard-v2', JSON.stringify(rows));
+      localStorage.setItem('roy-dashboard-v3', JSON.stringify(rows));
     }
 
     // Actions
     sel('#addRow').onclick=()=>{ rows.push({ticker:'',last:'',open:'',prev:'',ma20:'',ma50:'',ma200:'',vol:'',volavg:'',entry:'',target:'',stop:'',spark:''}); render(); };
-    sel('#save').onclick = ()=>{ localStorage.setItem('roy-dashboard-v2', JSON.stringify(rows)); alert('Saved locally.'); };
-    sel('#load').onclick = ()=>{ const v = localStorage.getItem('roy-dashboard-v2'); if(v){ rows=JSON.parse(v); render(); } else alert('No saved data found.'); };
-    sel('#reset').onclick=()=>{ if(confirm('Reset dashboard to starter tickers?')){ rows = JSON.parse(JSON.stringify(DEFAULT_ROWS)); render(); } };
+    sel('#save').onclick = ()=>{ localStorage.setItem('roy-dashboard-v3', JSON.stringify(rows)); alert('Saved locally.'); };
+    sel('#load').onclick = ()=>{ const v = localStorage.getItem('roy-dashboard-v3'); if(v){ rows=JSON.parse(v); render(); } else alert('No saved data found.'); };
+    sel('#reset').onclick=()=>{ if(confirm('Reset to your starter 3 ETFs?')){ rows = JSON.parse(JSON.stringify(DEFAULT_ROWS)); render(); } };
 
     // Sorting
-    sel('#sortSignal').onclick=()=>{
-      const score=(t)=>/Strong Buy/.test(t)?4:/Buy/.test(t)?3:/Watch|Caution/.test(t)?2:/Sell|Bearish/.test(t)?1:0;
-      rows.sort((a,b)=> score(computeRow(b).tSignal)-score(computeRow(a).tSignal)); render();
-    };
+    sel('#sortSignal').onclick=()=>{ const score=t=>/Strong Buy/.test(t)?4:/Buy/.test(t)?3:/Watch|Caution/.test(t)?2:/Sell|Bearish/.test(t)?1:0; rows.sort((a,b)=> score(compute(b).tSignal)-score(compute(a).tSignal)); render(); };
     sel('#sortTicker').onclick=()=>{ rows.sort((a,b)=> (a.ticker||'').localeCompare(b.ticker||'')); render(); };
 
     // CSV import/export
     sel('#csvIn').addEventListener('change',e=>{
-      const file = e.target.files[0]; if(!file) return;
-      const reader = new FileReader();
-      reader.onload=()=>{
-        const text = reader.result; const lines = text.split(/\r?\n/).filter(Boolean);
-        const hdr = lines.shift().split(',').map(h=>h.trim().toLowerCase());
-        const idx = (name)=> hdr.indexOf(name);
-        const mapRow=(cols)=>({
-          ticker: cols[idx('ticker')]||'',
-          last: cols[idx('last')]||'', open: cols[idx('open')]||'', prev: cols[idx('prev close')]||cols[idx('prev')]||'',
-          ma20: cols[idx('ma20')]||'', ma50: cols[idx('ma50')]||'', ma200: cols[idx('ma200')]||'',
-          vol: cols[idx('volume')]||'', volavg: cols[idx('avg vol (3m)')]||cols[idx('avgvol')]||'',
-          entry: cols[idx('entry')]||'', target: cols[idx('target')]||'', stop: cols[idx('stop')]||'',
+      const f=e.target.files[0]; if(!f) return;
+      const rd=new FileReader();
+      rd.onload=()=>{
+        const lines=rd.result.split(/\r?\n/).filter(Boolean);
+        const hdr=lines.shift().split(',').map(h=>h.trim().toLowerCase());
+        const idx=n=>hdr.indexOf(n);
+        const map=cols=>({
+          ticker:cols[idx('ticker')]||'',
+          last:cols[idx('last')]||'',
+          open:cols[idx('open')]||'',
+          prev:cols[idx('prev close')]||cols[idx('prev')]||'',
+          ma20:cols[idx('ma20')]||'',
+          ma50:cols[idx('ma50')]||'',
+          ma200:cols[idx('ma200')]||'',
+          vol:cols[idx('volume')]||'',
+          volavg:cols[idx('avg vol (3m)')]||cols[idx('avgvol')]||'',
+          entry:cols[idx('entry')]||'',
+          target:cols[idx('target')]||'',
+          stop:cols[idx('stop')]||'',
           spark: cols[idx('sparkline prices')]||cols[idx('spark')]||''
         });
-        rows = lines.map(l=> mapRow(l.split(',')));
+        rows = lines.map(l=> map(l.split(',')));
         render();
       };
-      reader.readAsText(file);
+      rd.readAsText(f);
     });
-
     sel('#export').onclick=()=>{
-      const headers = ['Ticker','Last','Open','Prev Close','MA20','MA50','MA200','Volume','Avg Vol (3m)','Entry','Target','Stop','Sparkline Prices'];
-      const csv = [headers.join(',')].concat(rows.map(r=>[
-        r.ticker,r.last,r.open,r.prev,r.ma20,r.ma50,r.ma200,r.vol,r.volavg,r.entry,r.target,r.stop,r.spark
-      ].join(','))).join('\n');
-      const blob = new Blob([csv],{type:'text/csv'}); const url = URL.createObjectURL(blob);
-      const a = el('a',{href:url,download:'roy_portfolio_dashboard.csv'}); document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(url); a.remove();}, 0);
+      const hdr=['Ticker','Last','Open','Prev Close','MA20','MA50','MA200','Volume','Avg Vol (3m)','Entry','Target','Stop','Sparkline Prices'];
+      const csv=[hdr.join(',')].concat(rows.map(r=>[r.ticker,r.last,r.open,r.prev,r.ma20,r.ma50,r.ma200,r.vol,r.volavg,r.entry,r.target,r.stop,r.spark].join(','))).join('\n');
+      const blob=new Blob([csv],{type:'text/csv'});
+      const url=URL.createObjectURL(blob);
+      const a=el('a',{href:url,download:'roy_portfolio_dashboard.csv'});
+      document.body.appendChild(a); a.click();
+      setTimeout(()=>{URL.revokeObjectURL(url); a.remove();},0);
     };
 
+    // Column width + density controls
+    (function(){
+      const storedScale=localStorage.getItem('roy-col-scale')||'1.15';
+      root.style.setProperty('--col-scale', storedScale);
+      const storedDensity=localStorage.getItem('roy-density')||'density-cozy';
+      root.classList.remove('density-compact','density-cozy','density-comfy');
+      root.classList.add(storedDensity);
+    })();
+    document.getElementById('colScale').oninput=(e)=>{ root.style.setProperty('--col-scale', e.target.value); localStorage.setItem('roy-col-scale', e.target.value); };
+    document.getElementById('density').onchange=(e)=>{ root.classList.remove('density-compact','density-cozy','density-comfy'); root.classList.add(e.target.value); localStorage.setItem('roy-density', e.target.value); };
+
+    // Initial render
     render();
+
+    // ---- Yahoo via Cloudflare Worker (fill values) ----
+    const workerBase = "https://yahoo-proxy.royrosa83.workers.dev"; // change if needed
+    async function loadYahoo(base, syms=['SMH','XLK','SMHX']){
+      try{
+        const url=`${base}/quote?symbols=${syms.join(',')}`;
+        const data=await fetch(url,{cache:'no-store'}).then(r=>r.json());
+        const map=Object.fromEntries((data||[]).map(d=>[d.symbol,d]));
+        rows=rows.map(r=>{
+          const d=map[r.ticker];
+          if(!d||d.error) return r;
+          const f=(x,n=2)=> x==null? '': Number(x).toFixed(n);
+          return {
+            ...r,
+            last: d.last??r.last, open: d.open??r.open, prev: d.prev??r.prev,
+            ma20: d.ma20!=null? f(d.ma20):r.ma20, ma50: d.ma50!=null? f(d.ma50):r.ma50, ma200: d.ma200!=null? f(d.ma200):r.ma200,
+            vol: d.vol??r.vol, volavg: d.volAvg63!=null? Math.round(d.volAvg63):r.volavg
+          };
+        });
+        render();
+      }catch(e){ console.warn('Yahoo load failed', e); }
+    }
+    document.getElementById('refreshData').onclick=()=>loadYahoo(workerBase, rows.map(r=>r.ticker).filter(Boolean));
+    // auto-load once
+    loadYahoo(workerBase, ['SMH','XLK','SMHX']);
   </script>
-  <script>
-// Replace with your actual Worker URL (without `/quote`)
-const workerBase = "https://yahoo-proxy.royrosa83.workers.dev";
-
-async function loadYahoo(workerBase, syms=['SMH','XLK','SMHX']){
-  const url = `${workerBase}/quote?symbols=${syms.join(',')}`;
-  const data = await fetch(url).then(r=>r.json());
-  const map = Object.fromEntries(data.map(d => [d.symbol, d]));
-
-  // Assuming you have a `rows` array the dashboard uses
-  rows = rows.map(r=>{
-    const d = map[r.ticker];
-    if(!d) return r;
-    return {
-      ...r,
-      last: d.last ?? r.last,
-      open: d.open ?? r.open,
-      prev: d.prev ?? r.prev,
-      ma20: d.ma20 ? d.ma20.toFixed(2) : r.ma20,
-      ma50: d.ma50 ? d.ma50.toFixed(2) : r.ma50,
-      ma200: d.ma200 ? d.ma200.toFixed(2) : r.ma200,
-      vol: d.vol ?? r.vol,
-      volavg: d.volAvg63 ? Math.round(d.volAvg63) : r.volavg
-    };
-  });
-
-  // Now redraw the dashboard
-  render();
-}
-
-// Load data on page load
-loadYahoo(workerBase, ['SMH','XLK','SMHX']);
-</script>
-<script>
-// ---- Yahoo via Cloudflare Worker ----
-const workerBase = "https://yahoo-proxy.royrosa83.workers.dev";  // your worker
-
-async function loadYahoo(base, syms=['SMH','XLK','SMHX']){
-  try {
-    const url = `${base}/quote?symbols=${syms.join(',')}`;
-    const data = await fetch(url, { cache: "no-store" }).then(r=>r.json());
-    const map = Object.fromEntries((data||[]).map(d => [d.symbol, d]));
-    // rows is the array the dashboard already uses
-    rows = rows.map(r=>{
-      const d = map[r.ticker];
-      if(!d || d.error) return r;
-      const f = (x,n=2)=> x==null ? '' : Number(x).toFixed(n);
-      return {
-        ...r,
-        last:   d.last ?? r.last,
-        open:   d.open ?? r.open,
-        prev:   d.prev ?? r.prev,
-        ma20:   d.ma20  != null ? f(d.ma20)  : r.ma20,
-        ma50:   d.ma50  != null ? f(d.ma50)  : r.ma50,
-        ma200:  d.ma200 != null ? f(d.ma200) : r.ma200,
-        vol:    d.vol ?? r.vol,
-        volavg: d.volAvg63 != null ? Math.round(d.volAvg63) : r.volavg
-      };
-    });
-    render();
-  } catch (e) {
-    console.warn("Yahoo load failed:", e);
-  }
-}
-
-// Fetch once on page load:
-loadYahoo(workerBase, ['SMH','XLK','SMHX']);
-</script>
-
 </body>
 </html>
