@@ -6,6 +6,18 @@
   <title>Roy – Portfolio Signals & Intraday Dashboard</title>
   <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="%230b1120"/><path d="M10 40 L24 28 L34 36 L54 18" stroke="%2360a5fa" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>' />
   <style>
+    .table-wrapper {
+  overflow-x: auto;
+  max-width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding-bottom: 10px;
+}
+
+table {
+  min-width: 1200px; /* Adjust this wider/narrower if needed */
+}
+
     :root{ --bg:#0b0f17; --panel:#121826; --muted:#8b9bb5; --text:#e6edf7; --green:#22c55e; --red:#ef4444; --yellow:#f59e0b; --blue:#60a5fa; --card:#0f1522; --border:#1f2937; --shadow:0 6px 16px rgba(0,0,0,.25); --col-scale:1.15; --base-font:15px; --cell-pad:10px; }
     :root.light { --bg:#f8fafc; --panel:#ffffff; --muted:#5b6b85; --text:#0f172a; --green:#16a34a; --red:#dc2626; --yellow:#d97706; --blue:#2563eb; --card:#f1f5f9; --border:#e2e8f0; --shadow:0 6px 16px rgba(2,6,23,.08); }
     *{box-sizing:border-box}
@@ -116,9 +128,9 @@
         </div>
       </div>
 
-      <div style="overflow:auto;border-radius:12px;border:1px solid var(--border)">
-        <table id="tbl">
-          <thead>
+    <div class="table-wrapper">
+  <table id="tbl1">
+     <thead>
             <tr>
               <th>Ticker</th>
               <th title="Last Price">Last</th>
@@ -148,6 +160,9 @@
             </tr>
           </thead>
           <tbody id="body"></tbody>
+    ...
+  </table>
+</div>
         </table>
       </div>
     </main>
