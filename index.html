@@ -175,9 +175,33 @@
     const VOL_PLUS = 1.10;   // ≥ 1.10x avg volume
 
     const DEFAULT_ROWS = [
-      {ticker:'SMH' ,last:'', open:'', prev:'', ma20:'', ma50:'', ma200:'', vol:'', volavg:'', entry:'', target:'', stop:'', spark:''},
-      {ticker:'XLK' ,last:'', open:'', prev:'', ma20:'', ma50:'', ma200:'', vol:'', volavg:'', entry:'', target:'', stop:'', spark:''},
-      {ticker:'SMHX',last:'', open:'', prev:'', ma20:'', ma50:'', ma200:'', vol:'', volavg:'', entry:'', target:'', stop:'', spark:''}
+    const DEFAULT_ROWS = [
+  {
+    ticker:'SMH',
+    last:'295.65', open:'', prev:'',
+    ma20:'291.60', ma50:'280.80', ma200:'',
+    vol:'', volavg:'',
+    entry:'287.26', target:'350.00', stop:'286.22',
+    spark:''
+  },
+  {
+    ticker:'XLK',
+    last:'265.70', open:'', prev:'',
+    ma20:'263.26', ma50:'254.82', ma200:'',
+    vol:'', volavg:'',
+    entry:'231.87', target:'320.00', stop:'255.89',
+    spark:''
+  },
+  {
+    ticker:'SMHX',
+    last:'35.50', open:'', prev:'',
+    ma20:'34.36', ma50:'32.09', ma200:'',
+    vol:'', volavg:'',
+    entry:'36.00', target:'45.00', stop:'34.42',
+    spark:''
+  }
+];
+
     ];
 
     let rows = JSON.parse(localStorage.getItem('roy-dashboard-v2')||'null') || DEFAULT_ROWS;
