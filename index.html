@@ -295,35 +295,67 @@
     /* ------------------------------ QUOTES ------------------------------- */
     async function loadYahoo(base, symbols){
   if (!symbols.length) return;
+
+  // helper: parse numeric safely
+  const toNum = (v) => {
+    const n = Number(v);
+    return Number.isFinite(n) ? n : null;
+  };
+
+  // helper: take the first present key from an object
+  const firstOf = (obj, keys) => {
+    for (const k of keys) {
+      if (obj && obj[k] != null) return obj[k];
+    }
+    return null;
+  };
+
   try{
-    // IMPORTANT: Do not encode commas; Worker expects "SMH,XLK,SMHX"
+    // IMPORTANT: don't encode commas
     const url = `${base.replace(/\/$/,'')}/quote?symbols=${symbols.join(',')}&_=${Date.now()}`;
-    const res = await fetch(url, { headers: { 'cache-control':'no-cache' }});
+    const res = await fetch(url, { headers: { 'cache-control': 'no-cache' }});
+
     if (!res.ok) {
       console.error('Worker HTTP error', res.status, await res.text());
       return;
     }
-    const data = await res.json(); // [{symbol,last,open,prevClose,ma20,ma50,ma200,volume,avgvol}]
-    const map = {};
-    (data||[]).forEach(q => map[(q.symbol||'').toUpperCase()] = q);
 
-    state.rows.forEach(r=>{
-      const q = map[(r.ticker||'').toUpperCase()];
+    const data = await res.json();      // [{symbol, last, open, prev, vol, ma20, ma50, ma200, volAvg63}, ...]
+    const bySymbol = {};
+    (data || []).forEach(q => {
+      const sym = (q.symbol || '').toUpperCase();
+      if (sym) bySymbol[sym] = q;
+    });
+
+    state.rows.forEach(r => {
+      const q = bySymbol[(r.ticker || '').toUpperCase()];
       if (!q) return;
+
+      // Map Worker keys → dashboard fields (with fallbacks)
+      const last     = firstOf(q, ['last', 'regularMarketPrice']);
+      const open     = firstOf(q, ['open', 'regularMarketOpen']);
+      const prev     = firstOf(q, ['prev', 'previousClose', 'regularMarketPreviousClose']);
+      const vol      = firstOf(q, ['vol', 'volume', 'regularMarketVolume']);
+      const ma20     = firstOf(q, ['ma20', 'fiftyDayAverage']);
+      const ma50     = firstOf(q, ['ma50']);
+      const ma200    = firstOf(q, ['ma200', 'twoHundredDayAverage']);
+      const avgvol63 = firstOf(q, ['volAvg63', 'averageDailyVolume3Month', 'avgvol']);
+
       r.quote = {
-        last:   num(q.last),
-        open:   num(q.open),
-        prevClose: num(q.prevClose),
-        ma20:   num(q.ma20),
-        ma50:   num(q.ma50),
-        ma200:  num(q.ma200),
-        volume: num(q.volume),
-        avgvol: num(q.avgvol)
+        last:   toNum(last),
+        open:   toNum(open),
+        prevClose: toNum(prev),        // <— the rest of the dashboard uses prevClose
+        ma20:   toNum(ma20),
+        ma50:   toNum(ma50),
+        ma200:  toNum(ma200),
+        volume: toNum(vol),
+        avgvol: toNum(avgvol63)
       };
     });
+
     saveState(state);
     render();
-  }catch(err){
+  } catch(err){
     console.error('Worker fetch error', err);
   }
 }
