@@ -294,34 +294,40 @@
 
     /* ------------------------------ QUOTES ------------------------------- */
     async function loadYahoo(base, symbols){
-      if (!symbols.length) return;
-      try{
-        const url = `${base.replace(/\/$/,'')}/quote?symbols=${encodeURIComponent(symbols.join(','))}`;
-        const res = await fetch(url, {headers:{'cache-control':'no-cache'}});
-        const data = await res.json(); // [{symbol,last,open,prevClose,ma20,ma50,ma200,volume,avgvol}]
-        const map = {};
-        (data||[]).forEach(q=> map[(q.symbol||'').toUpperCase()] = q);
-
-        state.rows.forEach(r=>{
-          const q = map[(r.ticker||'').toUpperCase()];
-          if (!q) return;
-          r.quote = {
-            last: num(q.last),
-            open: num(q.open),
-            prevClose: num(q.prevClose),
-            ma20: num(q.ma20),
-            ma50: num(q.ma50),
-            ma200: num(q.ma200),
-            volume: num(q.volume),
-            avgvol: num(q.avgvol)
-          };
-        });
-        saveState(state);
-        render();
-      }catch(err){
-        console.error('Worker fetch error', err);
-      }
+  if (!symbols.length) return;
+  try{
+    // IMPORTANT: Do not encode commas; Worker expects "SMH,XLK,SMHX"
+    const url = `${base.replace(/\/$/,'')}/quote?symbols=${symbols.join(',')}&_=${Date.now()}`;
+    const res = await fetch(url, { headers: { 'cache-control':'no-cache' }});
+    if (!res.ok) {
+      console.error('Worker HTTP error', res.status, await res.text());
+      return;
     }
+    const data = await res.json(); // [{symbol,last,open,prevClose,ma20,ma50,ma200,volume,avgvol}]
+    const map = {};
+    (data||[]).forEach(q => map[(q.symbol||'').toUpperCase()] = q);
+
+    state.rows.forEach(r=>{
+      const q = map[(r.ticker||'').toUpperCase()];
+      if (!q) return;
+      r.quote = {
+        last:   num(q.last),
+        open:   num(q.open),
+        prevClose: num(q.prevClose),
+        ma20:   num(q.ma20),
+        ma50:   num(q.ma50),
+        ma200:  num(q.ma200),
+        volume: num(q.volume),
+        avgvol: num(q.avgvol)
+      };
+    });
+    saveState(state);
+    render();
+  }catch(err){
+    console.error('Worker fetch error', err);
+  }
+}
+
 
     /* ---------------------------- THEME TOGGLE --------------------------- */
     const savedTheme = localStorage.getItem('roy-theme') || 'auto';
