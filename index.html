@@ -5,68 +5,62 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Roy – Portfolio Signals & Intraday Dashboard</title>
   <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="%230b1120"/><path d="M10 40 L24 28 L34 36 L54 18" stroke="%2360a5fa" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>' />
+
   <style>
-    .table-wrapper {
-  overflow-x: auto;
-  max-width: 100%;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  padding-bottom: 10px;
-}
-
-table {
-  min-width: 1200px; /* Adjust this wider/narrower if needed */
-}
-
-    :root{ --bg:#0b0f17; --panel:#121826; --muted:#8b9bb5; --text:#e6edf7; --green:#22c55e; --red:#ef4444; --yellow:#f59e0b; --blue:#60a5fa; --card:#0f1522; --border:#1f2937; --shadow:0 6px 16px rgba(0,0,0,.25); --col-scale:1.15; --base-font:15px; --cell-pad:10px; }
+    :root{ --bg:#0b0f17; --panel:#121826; --muted:#8b9bb5; --text:#e6edf7; --green:#22c55e; --red:#ef4444; --yellow:#f59e0b; --blue:#60a5fa; --card:#0f1522; --border:#1f2937; --shadow:0 6px 16px rgba(0,0,0,.25); --col-scale:1.10; --base-font:15px; --cell-pad:10px; }
     :root.light { --bg:#f8fafc; --panel:#ffffff; --muted:#5b6b85; --text:#0f172a; --green:#16a34a; --red:#dc2626; --yellow:#d97706; --blue:#2563eb; --card:#f1f5f9; --border:#e2e8f0; --shadow:0 6px 16px rgba(2,6,23,.08); }
+
     *{box-sizing:border-box}
     body{margin:0;background:linear-gradient(180deg,var(--bg),var(--panel));color:var(--text);font:var(--base-font)/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
     header{position:sticky;top:0;z-index:5;background:color-mix(in oklab, var(--bg), transparent 20%);backdrop-filter:saturate(140%) blur(6px);border-bottom:1px solid var(--border)}
     .wrap{max-width:1200px;margin:0 auto;padding:14px 18px;display:flex;align-items:center;gap:14px;justify-content:space-between}
     h1{font-size:18px;margin:0}
     .sub{color:var(--muted);font-size:12px}
-   .grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 12px;
-}
-    }    @media (max-width:980px){.grid{grid-template-columns:1fr}}
+
+    .grid{display:grid;grid-template-columns: 280px 1fr; gap:16px; max-width:1200px;margin:16px auto;padding:0 18px}
+    @media (max-width:980px){.grid{grid-template-columns:1fr}}
+
     .panel{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:14px;box-shadow:var(--shadow)}
     .btn{background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:10px;cursor:pointer}
     .btn:hover{border-color:color-mix(in oklab, var(--border), var(--blue) 30%)}
     .btn.danger{background:color-mix(in oklab, var(--card), var(--red) 10%);border-color:color-mix(in oklab, var(--border), var(--red) 25%)}
     .row{display:flex;gap:8px;flex-wrap:wrap}
     .note{color:var(--muted);font-size:12px}
-    table{width:100%;border-collapse:separate;border-spacing:0;font-size:calc(var(--base-font) * 0.95)}
-    thead th{position:sticky;top:0;background:var(--panel);border-bottom:1px solid var(--border);font-weight:700;padding:calc(var(--cell-pad) * 0.8) var(--cell-pad);text-align:left;font-size:calc(var(--base-font) * 0.9);color:color-mix(in oklab, var(--muted), var(--text) 25%)}
+
+    /* Table wrapper – only the table scrolls horizontally */
+    .table-wrapper{
+      overflow-x:auto;
+      max-width:100%;
+      border-radius:12px;
+      border:1px solid var(--border);
+      padding-bottom:10px;
+    }
+
+    table{width:100%;border-collapse:separate;border-spacing:0;font-size:calc(var(--base-font) * .95);min-width:980px;}
+    thead th{position:sticky;top:0;background:var(--panel);border-bottom:1px solid var(--border);font-weight:700;padding:calc(var(--cell-pad) * .8) var(--cell-pad);text-align:left;font-size:calc(var(--base-font) * .9);color:color-mix(in oklab, var(--muted), var(--text) 25%)}
     tbody td{padding:var(--cell-pad);border-bottom:1px dashed color-mix(in oklab, var(--border), transparent 40%);vertical-align:middle}
     tbody tr{transition:background .15s ease, box-shadow .15s ease}
     tbody tr:hover{background:color-mix(in oklab, var(--panel), var(--card) 22%); box-shadow:0 1px 0 rgba(255,255,255,.04) inset}
-    td input{width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:calc(var(--base-font) * 0.95)}
-    td[data-out]{font-variant-numeric:tabular-nums}
+    td input{width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:calc(var(--base-font) * .95)}
+
+    /* Sticky first column (Ticker) for better horizontal scrolling */
+    .table-wrapper thead th:first-child,
+    .table-wrapper tbody td:first-child{
+      position:sticky; left:0; z-index:2; background:var(--panel);
+      box-shadow:1px 0 0 var(--border);
+    }
+
+    /* Density controls */
+    .density-compact { --cell-pad: 6px; --base-font: 14px; }
+    .density-cozy    { --cell-pad: 10px; --base-font: 15px; }
+    .density-comfy   { --cell-pad: 14px; --base-font: 16px; }
+
     .pill{display:inline-block;padding:6px 10px;border-radius:999px;font-size:12px;border:1px solid var(--border)}
     .pill.green{background:rgba(34,197,94,.12);color:#86efac;border-color:rgba(34,197,94,.35)}
     .pill.red{background:rgba(239,68,68,.12);color:#fecaca;border-color:rgba(239,68,68,.35)}
     .pill.yellow{background:rgba(245,158,11,.12);color:#fde68a;border-color:rgba(245,158,11,.35)}
     .pill.blue{background:rgba(96,165,250,.12);color:#bfdbfe;border-color:rgba(96,165,250,.35)}
-    /* Column sizing */
-    th, td { min-width: calc(80px * var(--col-scale)); }
-    td:nth-child(1), th:nth-child(1) { min-width: calc(64px * var(--col-scale)); }
-    td:nth-child(2),th:nth-child(2), td:nth-child(3),th:nth-child(3), td:nth-child(4),th:nth-child(4){ min-width: calc(100px * var(--col-scale)); }
-    td:nth-child(5),th:nth-child(5), td:nth-child(7),th:nth-child(7), td:nth-child(18),th:nth-child(18), td:nth-child(19),th:nth-child(19), td:nth-child(20),th:nth-child(20){ min-width: calc(120px * var(--col-scale)); }
-    td:nth-child(9),th:nth-child(9), td:nth-child(10),th:nth-child(10), td:nth-child(11),th:nth-child(11){ min-width: calc(90px * var(--col-scale)); }
-    td:nth-child(12),th:nth-child(12){ min-width: calc(120px * var(--col-scale)); }
-    td:nth-child(13),th:nth-child(13){ min-width: calc(130px * var(--col-scale)); }
-    td:nth-child(14),th:nth-child(14){ min-width: calc(105px * var(--col-scale)); }
-    td:nth-child(21),th:nth-child(21){ min-width: calc(160px * var(--col-scale)); }
-    td:nth-child(22),th:nth-child(22){ min-width: calc(180px * var(--col-scale)); }
-    td:nth-child(23),th:nth-child(23){ min-width: calc(240px * var(--col-scale)); }
-    td:nth-child(24),th:nth-child(24){ min-width: calc(150px * var(--col-scale)); }
-    /* Density modes */
-    .density-compact { --cell-pad: 6px; --base-font: 14px; }
-    .density-cozy    { --cell-pad: 10px; --base-font: 15px; }
-    .density-comfy   { --cell-pad: 14px; --base-font: 16px; }
+
     .spark{width:120px;height:32px;display:block}
   </style>
 </head>
@@ -102,9 +96,9 @@ table {
         <ul class="note" style="margin:6px 0 0 16px;line-height:1.35">
           <li><b>Ticker</b> (e.g., SMH)</li>
           <li><b>Last</b>, <b>Open</b>, <b>Prev Close</b></li>
-          <li><b>MA20</b>, <b>MA50</b>, <b>MA200</b> (from your Signals/Data tabs or auto)</li>
+          <li><b>MA20</b>, <b>MA50</b>, <b>MA200</b> (auto or from Signals/Data)</li>
           <li><b>Volume</b>, <b>Avg Vol (3m)</b> → dashboard computes <b>Vol Ratio</b></li>
-          <li><b>Entry</b>, <b>Target</b>, <b>Stop</b> → dashboard computes RR & distances</li>
+          <li><b>Entry</b>, <b>Target</b>, <b>Stop</b> → RR & distances</li>
           <li><b>Sparkline Prices</b> — optional comma-separated closes (e.g., 300,304,302,307,310)</li>
         </ul>
       </details>
@@ -115,7 +109,7 @@ table {
         <div class="note">Edit any input; outputs update instantly. Use the sparkline to visualize recent drift.</div>
         <div class="row">
           <label class="btn" title="Column width">Cols ×
-            <input id="colScale" type="range" min="1" max="1.6" step="0.05" style="vertical-align:middle;width:140px;margin-left:6px">
+            <input id="colScale" type="range" min="0.9" max="1.4" step="0.05" style="vertical-align:middle;width:140px;margin-left:6px">
           </label>
           <select id="density" class="btn" title="Row density">
             <option value="density-compact">Compact</option>
@@ -128,9 +122,10 @@ table {
         </div>
       </div>
 
-    <div class="table-wrapper">
-  <table id="tbl1">
-     <thead>
+      <!-- TABLE WRAPPER -->
+      <div class="table-wrapper">
+        <table id="tbl1">
+          <thead>
             <tr>
               <th>Ticker</th>
               <th title="Last Price">Last</th>
@@ -160,46 +155,37 @@ table {
             </tr>
           </thead>
           <tbody id="body"></tbody>
-    ...
-  </table>
-</div>
         </table>
       </div>
     </main>
   </div>
 
   <script>
-    // Theme toggle
-    const root = document.documentElement;
-    const savedTheme = localStorage.getItem('roy-theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    function applyTheme(mode){ root.classList.toggle('light', mode==='light'); localStorage.setItem('roy-theme', mode); }
-    applyTheme(savedTheme || (prefersDark? 'dark':'light'));
-    document.getElementById('themeToggle').onclick=()=>{ const cur = localStorage.getItem('roy-theme') || (prefersDark? 'dark':'light'); applyTheme(cur==='light'?'dark':'light'); };
+    // Theme
+    const root=document.documentElement;
+    const savedTheme=localStorage.getItem('roy-theme');
+    const prefersDark=window.matchMedia('(prefers-color-scheme: dark)').matches;
+    function applyTheme(m){root.classList.toggle('light',m==='light');localStorage.setItem('roy-theme',m);}
+    applyTheme(savedTheme || (prefersDark?'dark':'light'));
+    document.getElementById('themeToggle').onclick=()=>{const cur=localStorage.getItem('roy-theme')||(prefersDark?'dark':'light');applyTheme(cur==='light'?'dark':'light');};
 
-    // Utils
-    const sel = (q,ctx=document)=>ctx.querySelector(q);
-    const el = (t,props={})=>Object.assign(document.createElement(t),props);
-    const num = (v)=>{
-      if(v===undefined||v===null) return NaN;
-      if(typeof v==='number') return v;
-      const s = (''+v).replace(/[,\u00A0\s%$]/g,''); // strip commas, spaces, %, $
-      const n = parseFloat(s);
-      return isNaN(n)?NaN:n;
-    };
-    const pct = (v)=> isFinite(v)? (v*100).toFixed(2)+'%':'';
+    // Helpers
+    const sel=(q,c=document)=>c.querySelector(q);
+    const el=(t,p={})=>Object.assign(document.createElement(t),p);
+    const num=v=>{if(v==null)return NaN;if(typeof v==='number')return v;const s=(''+v).replace(/[,\u00A0\s%$]/g,'');const n=parseFloat(s);return isNaN(n)?NaN:n;};
+    const pct=v=>isFinite(v)?(v*100).toFixed(2)+'%':'';
 
-    const FLAT_BAND = 0.001; // ±0.10%
-    const VOL_PLUS = 1.10;   // ≥ 1.10x avg volume
+    const FLAT_BAND=0.001; // ±0.10%
+    const VOL_PLUS=1.10;
 
-    // Starter rows
-    const DEFAULT_ROWS = [
+    // Starter rows (with your entry/target/stop and seed MAs)
+    const DEFAULT_ROWS=[
       {ticker:'SMH', last:'295.65', open:'', prev:'', ma20:'291.60', ma50:'280.80', ma200:'', vol:'', volavg:'', entry:'287.26', target:'350.00', stop:'286.22', spark:''},
       {ticker:'XLK', last:'265.70', open:'', prev:'', ma20:'263.26', ma50:'254.82', ma200:'', vol:'', volavg:'', entry:'231.87', target:'320.00', stop:'255.89', spark:''},
       {ticker:'SMHX', last:'35.50',  open:'', prev:'', ma20:'34.36',  ma50:'32.09',  ma200:'', vol:'', volavg:'', entry:'36.00',  target:'45.00',  stop:'34.42',  spark:''}
     ];
 
-    let rows = JSON.parse(localStorage.getItem('roy-dashboard-v3')||'null') || DEFAULT_ROWS;
+    let rows=JSON.parse(localStorage.getItem('roy-dashboard-v3')||'null')||DEFAULT_ROWS;
 
     function compute(r){
       const last=num(r.last), open=num(r.open), prev=num(r.prev);
@@ -207,104 +193,100 @@ table {
       const vol=num(r.vol), volavg=num(r.volavg);
       const entry=num(r.entry), target=num(r.target), stop=num(r.stop);
 
-      const pOpen = (isFinite(last)&&isFinite(open)&&open!==0)? (last-open)/open : NaN;
-      const dirOpen = isFinite(pOpen)? (Math.abs(pOpen)<FLAT_BAND? 'Flat (±0.10%)' : (pOpen>0?'Up ≥ Open':'Down < Open')):'';
+      const pOpen=(isFinite(last)&&isFinite(open)&&open!==0)?(last-open)/open:NaN;
+      const dirOpen=isFinite(pOpen)?(Math.abs(pOpen)<FLAT_BAND?'Flat (±0.10%)':(pOpen>0?'Up ≥ Open':'Down < Open')):'';
+      const pPrev=(isFinite(last)&&isFinite(prev)&&prev!==0)?(last-prev)/prev:NaN;
+      const dirPrev=isFinite(pPrev)?(Math.abs(pPrev)<FLAT_BAND?'Flat (±0.10%)':(pPrev>0?'Up vs Prev Close':'Down vs Prev Close')):'';
+      const vRatio=(isFinite(vol)&&isFinite(volavg)&&volavg!==0)?vol/volavg:NaN;
 
-      const pPrev = (isFinite(last)&&isFinite(prev)&&prev!==0)? (last-prev)/prev : NaN;
-      const dirPrev = isFinite(pPrev)? (Math.abs(pPrev)<FLAT_BAND? 'Flat (±0.10%)' : (pPrev>0?'Up vs Prev Close':'Down vs Prev Close')):'';
-
-      const vRatio = (isFinite(vol)&&isFinite(volavg)&&volavg!==0)? vol/volavg : NaN;
-
-      let status = '';
-      if (isFinite(ma20)&&isFinite(ma50)&&isFinite(ma200)){
-        if (ma20>ma50 && ma50>ma200) status='Bullish (20>50>200)';
-        else if (ma20<ma50 && ma50<ma200) status='Bearish (20<50<200)';
+      let status='';
+      if(isFinite(ma20)&&isFinite(ma50)&&isFinite(ma200)){
+        if(ma20>ma50&&ma50>ma200) status='Bullish (20>50>200)';
+        else if(ma20<ma50&&ma50<ma200) status='Bearish (20<50<200)';
         else status='Caution (mixed)';
       }
 
-      let tSignal = '';
-      const volStrong = isFinite(vRatio) && vRatio>=VOL_PLUS;
-      if (status){
-        if (status.startsWith('Bullish')) tSignal = volStrong? 'Strong Buy (uptrend + vol)':'Buy (uptrend)';
-        else if (status.startsWith('Bearish')) tSignal = volStrong? 'Sell (downtrend + vol)':'Sell (downtrend)';
-        else tSignal = 'Watch (mixed)';
-      } else if (isFinite(last) && isFinite(ma200)) {
-        if (last>ma200) tSignal = volStrong? 'Bullish (above 200 + vol)':'Bullish (above 200)';
-        else tSignal = volStrong? 'Bearish (below 200 + vol)':'Bearish/Neutral (below 200)';
+      let tSignal='';
+      const volStrong=isFinite(vRatio)&&vRatio>=VOL_PLUS;
+      if(status){
+        if(status.startsWith('Bullish')) tSignal=volStrong?'Strong Buy (uptrend + vol)':'Buy (uptrend)';
+        else if(status.startsWith('Bearish')) tSignal=volStrong?'Sell (downtrend + vol)':'Sell (downtrend)';
+        else tSignal='Watch (mixed)';
+      }else if(isFinite(last)&&isFinite(ma200)){
+        if(last>ma200) tSignal=volStrong?'Bullish (above 200 + vol)':'Bullish (above 200)';
+        else tSignal=volStrong?'Bearish (below 200 + vol)':'Bearish/Neutral (below 200)';
       }
 
-      const pFromEntry = (isFinite(last)&&isFinite(entry)&&entry!==0)? (last-entry)/entry : NaN;
-      const pToTarget  = (isFinite(last)&&isFinite(target)&&target!==0)? (target-last)/last : NaN;
-      const pToStop    = (isFinite(last)&&isFinite(stop)&&stop!==0)? (stop-last)/last : NaN;
+      const pFromEntry=(isFinite(last)&&isFinite(entry)&&entry!==0)?(last-entry)/entry:NaN;
+      const pToTarget =(isFinite(last)&&isFinite(target)&&target!==0)?(target-last)/last:NaN;
+      const pToStop   =(isFinite(last)&&isFinite(stop)&&stop!==0)?(stop-last)/last:NaN;
 
       return {pOpen,dirOpen,pPrev,dirPrev,vRatio,status,tSignal,pFromEntry,pToTarget,pToStop};
     }
 
     function badge(text){
       if(!text) return '';
-      const span = el('span',{className:'pill',textContent:text});
-      if(/Strong Buy|Buy|Bullish/.test(text)) span.classList.add('green');
-      else if(/Sell|Bearish/.test(text)) span.classList.add('red');
-      else if(/Watch|Caution/.test(text)) span.classList.add('yellow');
-      else span.classList.add('blue');
-      return span.outerHTML;
+      const s=el('span',{className:'pill',textContent:text});
+      if(/Strong Buy|Buy|Bullish/.test(text)) s.classList.add('green');
+      else if(/Sell|Bearish/.test(text)) s.classList.add('red');
+      else if(/Watch|Caution/.test(text)) s.classList.add('yellow');
+      else s.classList.add('blue');
+      return s.outerHTML;
     }
 
     function sparkSVG(series){
       if(!series||series.length<2) return '';
       const w=120,h=32,pad=2;
-      const min=Math.min(...series), max=Math.max(...series);
-      const span=max-min||1;
+      const min=Math.min(...series), max=Math.max(...series), span=max-min||1;
       const step=(w-2*pad)/(series.length-1);
-      const y=v=> h-pad - ((v-min)/span)*(h-2*pad);
-      const x=i=> pad + i*step;
-      return `<svg class="spark" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg"><polyline fill="none" stroke="currentColor" stroke-width="2" points="${series.map((v,i)=>`${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ')}" /></svg>`;
+      const y=v=>h-pad-((v-min)/span)*(h-2*pad);
+      const x=i=>pad+i*step;
+      return `<svg class="spark" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg"><polyline fill="none" stroke="currentColor" stroke-width="2" points="${series.map((v,i)=>`${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ')}"/></svg>`;
     }
-    const parseSpark = s => (s||'').split(/[\s,]+/).map(Number).filter(n=>isFinite(n));
+    const parseSpark=s=>(s||'').split(/[\s,]+/).map(Number).filter(n=>isFinite(n));
 
-    const COLS = [
-      {key:'ticker', label:'Ticker', in:true},
-      {key:'last', label:'Last', in:true},
-      {key:'open', label:'Open', in:true},
-      {key:'prev', label:'Prev Close', in:true},
-      {key:'pOpen', label:'% vs Open', out:true},
-      {key:'dirOpen', label:'Intraday Dir (Open)', out:true},
-      {key:'pPrev', label:'% vs Prev', out:true},
-      {key:'dirPrev', label:'Dir (Prev Close)', out:true},
-      {key:'ma20', label:'MA20', in:true},
-      {key:'ma50', label:'MA50', in:true},
-      {key:'ma200', label:'MA200', in:true},
-      {key:'vol', label:'Volume', in:true},
-      {key:'volavg', label:'Avg Vol (3m)', in:true},
-      {key:'vRatio', label:'Vol Ratio', out:true},
-      {key:'entry', label:'Entry', in:true},
-      {key:'target', label:'Target', in:true},
-      {key:'stop', label:'Stop', in:true},
-      {key:'pFromEntry', label:'% From Entry', out:true},
-      {key:'pToTarget', label:'% To Target', out:true},
-      {key:'pToStop', label:'% To Stop', out:true},
-      {key:'status', label:'Trend Status', out:true},
-      {key:'tSignal', label:'Trend Signal', out:true, badge:true},
-      {key:'spark', label:'Sparkline Prices', in:true},
-      {key:'sparkOut', label:'Mini Chart', out:true},
-      {key:'del', label:'', out:true}
+    const COLS=[
+      {key:'ticker', in:true},
+      {key:'last',   in:true},
+      {key:'open',   in:true},
+      {key:'prev',   in:true},
+      {key:'pOpen', out:true},
+      {key:'dirOpen', out:true},
+      {key:'pPrev', out:true},
+      {key:'dirPrev', out:true},
+      {key:'ma20', in:true},
+      {key:'ma50', in:true},
+      {key:'ma200', in:true},
+      {key:'vol', in:true},
+      {key:'volavg', in:true},
+      {key:'vRatio', out:true},
+      {key:'entry', in:true},
+      {key:'target', in:true},
+      {key:'stop', in:true},
+      {key:'pFromEntry', out:true},
+      {key:'pToTarget', out:true},
+      {key:'pToStop', out:true},
+      {key:'status', out:true},
+      {key:'tSignal', out:true, badge:true},
+      {key:'spark', in:true},
+      {key:'sparkOut', out:true},
+      {key:'del', out:true}
     ];
 
     function render(){
-      const tbody = sel('#body');
-      tbody.innerHTML='';
+      const tbody=sel('#body'); tbody.innerHTML='';
       rows.forEach((r,idx)=>{
-        const c = {...compute(r), series: parseSpark(r.spark)};
-        const tr = el('tr');
+        const c={...compute(r), series:parseSpark(r.spark)};
+        const tr=el('tr');
         COLS.forEach(col=>{
-          const td = el('td');
+          const td=el('td');
           if(col.in){
-            const inp = el('input',{value:r[col.key]??''});
-            inp.addEventListener('input',()=>{ r[col.key]=inp.value; render(); });
+            const inp=el('input',{value:r[col.key]??''});
+            inp.addEventListener('input',()=>{r[col.key]=inp.value;render();});
             if(col.key==='ticker') inp.placeholder='e.g., SMH';
             if(col.key==='spark') inp.placeholder='e.g., 300,304,302,307,310';
             td.appendChild(inp);
-          } else if(col.out){
+          }else{
             td.setAttribute('data-out','');
             let val='';
             switch(col.key){
@@ -312,16 +294,16 @@ table {
               case 'dirOpen': val=c.dirOpen; break;
               case 'pPrev': val=pct(c.pPrev); break;
               case 'dirPrev': val=c.dirPrev; break;
-              case 'vRatio': val=isFinite(c.vRatio)? c.vRatio.toFixed(2):''; break;
+              case 'vRatio': val=isFinite(c.vRatio)?c.vRatio.toFixed(2):''; break;
               case 'pFromEntry': val=pct(c.pFromEntry); break;
               case 'pToTarget': val=pct(c.pToTarget); break;
               case 'pToStop': val=pct(c.pToStop); break;
               case 'status': val=c.status; break;
               case 'tSignal': val=badge(c.tSignal); break;
-              case 'sparkOut': val=c.series.length? sparkSVG(c.series):''; break;
-              case 'del': const b=el('button',{className:'btn danger',textContent:'Delete'}); b.onclick=()=>{ rows.splice(idx,1); render(); }; td.appendChild(b); break;
+              case 'sparkOut': val=c.series.length?sparkSVG(c.series):''; break;
+              case 'del': const b=el('button',{className:'btn danger',textContent:'Delete'}); b.onclick=()=>{rows.splice(idx,1);render();}; td.appendChild(b); break;
             }
-            if(col.key!=='del') td.innerHTML = val;
+            if(col.key!=='del') td.innerHTML=val;
           }
           tr.appendChild(td);
         });
@@ -330,17 +312,16 @@ table {
       localStorage.setItem('roy-dashboard-v3', JSON.stringify(rows));
     }
 
-    // Actions
-    sel('#addRow').onclick=()=>{ rows.push({ticker:'',last:'',open:'',prev:'',ma20:'',ma50:'',ma200:'',vol:'',volavg:'',entry:'',target:'',stop:'',spark:''}); render(); };
-    sel('#save').onclick = ()=>{ localStorage.setItem('roy-dashboard-v3', JSON.stringify(rows)); alert('Saved locally.'); };
-    sel('#load').onclick = ()=>{ const v = localStorage.getItem('roy-dashboard-v3'); if(v){ rows=JSON.parse(v); render(); } else alert('No saved data found.'); };
-    sel('#reset').onclick=()=>{ if(confirm('Reset to your starter 3 ETFs?')){ rows = JSON.parse(JSON.stringify(DEFAULT_ROWS)); render(); } };
+    // Buttons
+    sel('#addRow').onclick=()=>{rows.push({ticker:'',last:'',open:'',prev:'',ma20:'',ma50:'',ma200:'',vol:'',volavg:'',entry:'',target:'',stop:'',spark:''});render();};
+    sel('#save').onclick=()=>{localStorage.setItem('roy-dashboard-v3',JSON.stringify(rows));alert('Saved locally.');};
+    sel('#load').onclick=()=>{const v=localStorage.getItem('roy-dashboard-v3');if(v){rows=JSON.parse(v);render();}else alert('No saved data found.');};
+    sel('#reset').onclick=()=>{if(confirm('Reset to your starter 3 ETFs?')){rows=JSON.parse(JSON.stringify(DEFAULT_ROWS));render();}};
 
-    // Sorting
-    sel('#sortSignal').onclick=()=>{ const score=t=>/Strong Buy/.test(t)?4:/Buy/.test(t)?3:/Watch|Caution/.test(t)?2:/Sell|Bearish/.test(t)?1:0; rows.sort((a,b)=> score(compute(b).tSignal)-score(compute(a).tSignal)); render(); };
-    sel('#sortTicker').onclick=()=>{ rows.sort((a,b)=> (a.ticker||'').localeCompare(b.ticker||'')); render(); };
+    sel('#sortSignal').onclick=()=>{const score=t=>/Strong Buy/.test(t)?4:/Buy/.test(t)?3:/Watch|Caution/.test(t)?2:/Sell|Bearish/.test(t)?1:0; rows.sort((a,b)=>score(compute(b).tSignal)-score(compute(a).tSignal));render();};
+    sel('#sortTicker').onclick=()=>{rows.sort((a,b)=>(a.ticker||'').localeCompare(b.ticker||''));render();};
 
-    // CSV import/export
+    // CSV
     sel('#csvIn').addEventListener('change',e=>{
       const f=e.target.files[0]; if(!f) return;
       const rd=new FileReader();
@@ -361,61 +342,51 @@ table {
           entry:cols[idx('entry')]||'',
           target:cols[idx('target')]||'',
           stop:cols[idx('stop')]||'',
-          spark: cols[idx('sparkline prices')]||cols[idx('spark')]||''
+          spark:cols[idx('sparkline prices')]||cols[idx('spark')]||''
         });
-        rows = lines.map(l=> map(l.split(',')));
-        render();
+        rows=lines.map(l=>map(l.split(','))); render();
       };
       rd.readAsText(f);
     });
     sel('#export').onclick=()=>{
       const hdr=['Ticker','Last','Open','Prev Close','MA20','MA50','MA200','Volume','Avg Vol (3m)','Entry','Target','Stop','Sparkline Prices'];
       const csv=[hdr.join(',')].concat(rows.map(r=>[r.ticker,r.last,r.open,r.prev,r.ma20,r.ma50,r.ma200,r.vol,r.volavg,r.entry,r.target,r.stop,r.spark].join(','))).join('\n');
-      const blob=new Blob([csv],{type:'text/csv'});
-      const url=URL.createObjectURL(blob);
-      const a=el('a',{href:url,download:'roy_portfolio_dashboard.csv'});
-      document.body.appendChild(a); a.click();
-      setTimeout(()=>{URL.revokeObjectURL(url); a.remove();},0);
+      const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob);
+      const a=el('a',{href:url,download:'roy_portfolio_dashboard.csv'}); document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},0);
     };
 
-    // Column width + density controls
+    // Column width + density
     (function(){
-      const storedScale=localStorage.getItem('roy-col-scale')||'1.15';
-      root.style.setProperty('--col-scale', storedScale);
+      const storedScale=localStorage.getItem('roy-col-scale')||'1.10';
+      root.style.setProperty('--col-scale',storedScale);
       const storedDensity=localStorage.getItem('roy-density')||'density-cozy';
-      root.classList.remove('density-compact','density-cozy','density-comfy');
-      root.classList.add(storedDensity);
+      root.classList.remove('density-compact','density-cozy','density-comfy'); root.classList.add(storedDensity);
     })();
-    document.getElementById('colScale').oninput=(e)=>{ root.style.setProperty('--col-scale', e.target.value); localStorage.setItem('roy-col-scale', e.target.value); };
-    document.getElementById('density').onchange=(e)=>{ root.classList.remove('density-compact','density-cozy','density-comfy'); root.classList.add(e.target.value); localStorage.setItem('roy-density', e.target.value); };
+    document.getElementById('colScale').oninput=e=>{root.style.setProperty('--col-scale',e.target.value);localStorage.setItem('roy-col-scale',e.target.value);};
+    document.getElementById('density').onchange=e=>{root.classList.remove('density-compact','density-cozy','density-comfy');root.classList.add(e.target.value);localStorage.setItem('roy-density',e.target.value);};
 
-    // Initial render
+    // Render once
     render();
 
-    // ---- Yahoo via Cloudflare Worker (fill values) ----
-    const workerBase = "https://yahoo-proxy.royrosa83.workers.dev"; // change if needed
-    async function loadYahoo(base, syms=['SMH','XLK','SMHX']){
-      try{
-        const url=`${base}/quote?symbols=${syms.join(',')}`;
-        const data=await fetch(url,{cache:'no-store'}).then(r=>r.json());
-        const map=Object.fromEntries((data||[]).map(d=>[d.symbol,d]));
-        rows=rows.map(r=>{
-          const d=map[r.ticker];
-          if(!d||d.error) return r;
-          const f=(x,n=2)=> x==null? '': Number(x).toFixed(n);
-          return {
-            ...r,
-            last: d.last??r.last, open: d.open??r.open, prev: d.prev??r.prev,
-            ma20: d.ma20!=null? f(d.ma20):r.ma20, ma50: d.ma50!=null? f(d.ma50):r.ma50, ma200: d.ma200!=null? f(d.ma200):r.ma200,
-            vol: d.vol??r.vol, volavg: d.volAvg63!=null? Math.round(d.volAvg63):r.volavg
-          };
-        });
-        render();
-      }catch(e){ console.warn('Yahoo load failed', e); }
-    }
+    // ---- Yahoo via Cloudflare Worker ----
+    // CHANGE THIS IF YOUR WORKER URL DIFFERs
+    const workerBase="https://yahoo-proxy.royrosa83.workers.dev";
+    async function loadYahoo(base,syms){try{
+      const url=`${base}/quote?symbols=${(syms&&syms.length?syms:rows.map(r=>r.ticker)).join(',')}`;
+      const data=await fetch(url,{cache:'no-store'}).then(r=>r.json());
+      const map=Object.fromEntries((data||[]).map(d=>[d.symbol,d]));
+      rows=rows.map(r=>{
+        const d=map[r.ticker]; if(!d||d.error) return r;
+        const f=(x,n=2)=>x==null?'':Number(x).toFixed(n);
+        return {...r,
+          last:d.last??r.last, open:d.open??r.open, prev:d.prev??r.prev,
+          ma20:d.ma20!=null?f(d.ma20):r.ma20, ma50:d.ma50!=null?f(d.ma50):r.ma50, ma200:d.ma200!=null?f(d.ma200):r.ma200,
+          vol:d.vol??r.vol, volavg:d.volAvg63!=null?Math.round(d.volAvg63):r.volavg
+        };
+      }); render();
+    }catch(e){console.warn('Yahoo load failed',e);}}
     document.getElementById('refreshData').onclick=()=>loadYahoo(workerBase, rows.map(r=>r.ticker).filter(Boolean));
-    // auto-load once
-    loadYahoo(workerBase, ['SMH','XLK','SMHX']);
+    loadYahoo(workerBase,['SMH','XLK','SMHX']); // auto-load once
   </script>
 </body>
 </html>
